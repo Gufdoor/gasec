@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:gasec_mobile_app/Login.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(MainApp());
+  runApp(MaterialApp(
+    home: Login(),
+    theme: ThemeData(
+      primaryColor: Color(0xFF37474F),
+      colorScheme: ColorScheme.fromSwatch().copyWith(
+        primary: Color(0xFF546E7A),
+        secondary: Color(0xFF546E7A),
+      )
+    ),
+    debugShowCheckedModeBanner: false,
+  ));
 }
 class MainApp extends StatefulWidget {
   const MainApp({Key? key}) : super(key: key);
@@ -510,8 +521,8 @@ class _ConfigState extends State<Config> {
                             backgroundColor: Color.fromARGB(255, 232, 116, 97),
                             shape: BeveledRectangleBorder()
                           ),
-                          onPressed: () {
-                              print('1');
+                          onPressed: () => {
+                              Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => Login()))
                           },
                           child: Text("Desconectar", style: TextStyle(color: Color.fromARGB(255, 57, 62, 65), fontSize: 20.0)),
                       ),]
@@ -627,8 +638,8 @@ class Ambiente extends StatelessWidget {
                             backgroundColor: Color.fromARGB(255, 232, 116, 97),
                             shape: BeveledRectangleBorder()
                           ),
-                          onPressed: () {
-                              print('1');
+                          onPressed: () => {
+                              
                           },
                           child: Text("Desconectar", style: TextStyle(color: Color.fromARGB(255, 57, 62, 65), fontSize: 20.0)),
                       //   Container(
