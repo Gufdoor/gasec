@@ -20,7 +20,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets: 
+  assets:
     - assets/Raster.png
     - assets/config.png
     - assets/logo.png

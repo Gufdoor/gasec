@@ -12,12 +12,12 @@ class ConnectPage extends StatefulWidget {
 }
 
 class _ConnectPageState extends State<ConnectPage> {
-  final ConnectionCubit _connectCubit = Modular.get<ConnectionCubit>();
+  final ConnectionCubit _connectionCubit = Modular.get<ConnectionCubit>();
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: _connectCubit,
+      value: _connectionCubit,
       child: const ConnectScreen(),
     );
   }

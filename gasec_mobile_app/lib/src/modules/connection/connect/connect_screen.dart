@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gasec_mobile_app/main.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:gasec_mobile_app/src/device_module.dart';
 
 class ConnectScreen extends StatefulWidget {
   const ConnectScreen({super.key});
@@ -9,95 +10,80 @@ class ConnectScreen extends StatefulWidget {
 }
 
 class _ConnectScreenState extends State<ConnectScreen> {
+  final TextEditingController ipController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(color: Color(0xFF37474F)),
-        padding: const EdgeInsets.all(16),
-        child: Center(
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: const Color(0xFF37474F),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
           child: SingleChildScrollView(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 32),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(300)),
-                    child: Image.asset(
-                      "assets/logo.png",
-                      width: 200,
-                      height: 150,
-                    ),
+                const SizedBox(height: 70.0),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10.0),
+                  child: Image.asset(
+                    "assets/logo.png",
+                    width: 200.0,
+                    height: 150.0,
                   ),
                 ),
-                Center(
-                  child: GestureDetector(
-                    child: const Text(
-                      "Bem Vindo(a)!",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                const SizedBox(height: 70.0),
+                const Text(
+                  "Bem Vindo(a)!",
+                  style: TextStyle(
+                    fontSize: 24.0,
+                    color: Color(0xFFFFFFFF),
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                Center(
-                  child: GestureDetector(
-                    child: const Text(
-                      "Insira as credenciais do dispositivo",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                      ),
-                    ),
+                const SizedBox(height: 8.0),
+                const Text(
+                  "Insira o endereço IPv4 do dispositivo para iniciar uma conexão",
+                  style: TextStyle(
+                    color: Color(0xFFFFFFFF),
+                    fontSize: 14.0,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16, bottom: 8),
-                  child: TextField(
-                    autofocus: true,
-                    keyboardType: TextInputType.text,
-                    style: const TextStyle(fontSize: 20),
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                      hintText: "IP do dispositivo",
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                  ),
-                ),
-                TextField(
-                  keyboardType: TextInputType.text,
-                  style: const TextStyle(fontSize: 20),
+                const SizedBox(height: 30.0),
+                TextFormField(
+                  keyboardType: TextInputType.number,
+                  controller: ipController,
+                  style: const TextStyle(fontSize: 14.0),
                   decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                    hintText: "Senha",
+                    contentPadding: const EdgeInsets.all(10.0),
+                    hintText: "IP do dispositivo",
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: const Color(0xFFD3D0CB),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16)),
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16, bottom: 16),
+                const SizedBox(height: 14.0),
+                SizedBox(
+                  height: 50.0,
+                  width: 160.0,
                   child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF587B7F),
+                      foregroundColor: Colors.black38,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                    ),
+                    onPressed: () {
+                      // TODO: implementar conexão
+                      Modular.to.navigate(routeDevice);
+                    },
                     child: const Text(
                       "Conectar",
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+                      style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 24.0),
                     ),
-                    onPressed: () => {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (BuildContext context) => const MainApp(),
-                        ),
-                      ),
-                    },
                   ),
                 ),
               ],
