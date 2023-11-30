@@ -1,4 +1,4 @@
-# Install script for directory: E:/General/Learning/PUC/7_periodo/ti5/esp_test
+# Install script for directory: E:/General/Learning/PUC/7_periodo/ti5/gasec/esp
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,7 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("E:/General/Learning/PUC/7_periodo/ti5/esp_test/build/esp-idf/cmake_install.cmake")
+  include("E:/General/Learning/PUC/7_periodo/ti5/gasec/esp/build/esp-idf/cmake_install.cmake")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "E:/General/Learning/PUC/7_periodo/ti5/esp_test/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "E:/General/Learning/PUC/7_periodo/ti5/gasec/esp/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

@@ -1,4 +1,4 @@
-/* * Data converted from E:/General/Learning/PUC/7_periodo/ti5/esp_test/build/esp-idf/mbedtls/x509_crt_bundle
+/* * Data converted from E:/General/Learning/PUC/7_periodo/ti5/gasec/esp/build/esp-idf/mbedtls/x509_crt_bundle
  */
 .data
 .section .rodata.embedded

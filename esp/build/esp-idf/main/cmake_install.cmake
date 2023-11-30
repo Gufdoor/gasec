@@ -1,4 +1,4 @@
-# Install script for directory: E:/General/Learning/PUC/7_periodo/ti5/esp_test/main
+# Install script for directory: E:/General/Learning/PUC/7_periodo/ti5/gasec/esp/main
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
