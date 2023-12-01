@@ -24,6 +24,10 @@
 #include "lwip/sockets.h"
 #include "lwip/sys.h"
 #include <lwip/netdb.h>
+#include "hal/adc_types.h"
+#include "esp_adc/adc_oneshot.h"
+#include "esp_adc/adc_cali.h"
+#include "esp_adc/adc_cali_scheme.h"
 
 #include <driver/gpio.h>
 
@@ -189,6 +193,48 @@ void app_main(void)
         ESP_LOGE("MQ2", "gpio_config PIN 13 FAILED %s", esp_err_to_name(err));
     }
 
+    adc_oneshot_unit_init_cfg_t initConfig = {.unit_id  = ADC_UNIT_1,
+                                              .ulp_mode = ADC_ULP_MODE_DISABLE};
+    adc_oneshot_chan_cfg_t config = {.atten = ADC_ATTEN_DB_0,
+                                              .bitwidth = ADC_BITWIDTH_DEFAULT};
+
+    // if (adc_oneshot_new_unit(&initConfig, &adcHandle) != ESP_OK) {
+    //     return ReturnStatus::GeneralError;
+    // }
+
+    adc_oneshot_unit_handle_t adcHandle;
+    adc_cali_handle_t adcCalibrationHandle;
+
+    err = adc_oneshot_new_unit(&initConfig, &adcHandle);
+
+    if (err != ESP_OK) {
+        ESP_LOGE("MQ2", "adc_oneshot_new_unit FAILED %s", esp_err_to_name(err));
+    }
+    
+    // if (adc_oneshot_config_channel(adcHandle, ADC_CHANNEL_5, &config)
+    //     != ESP_OK) {
+    //     return ReturnStatus::GeneralError;
+    // }
+
+    err = adc_oneshot_config_channel(adcHandle, ADC_CHANNEL_5, &config);
+
+    if (err != ESP_OK) {
+        ESP_LOGE("MQ2", "adc_oneshot_config_channel FAILED %s", esp_err_to_name(err));
+    }
+
+    adc_cali_line_fitting_config_t cali_config = {
+        .unit_id  = ADC_UNIT_1,
+        .atten    = ADC_ATTEN_DB_0,
+        .bitwidth = ADC_BITWIDTH_DEFAULT,
+    };
+
+    err = adc_cali_create_scheme_line_fitting(&cali_config,
+                                             &adcCalibrationHandle);
+
+    if (err != ESP_OK) {
+        ESP_LOGE("MQ2", "adc_cali_create_scheme_curve_fitting FAILED %s", esp_err_to_name(err));
+    }                                             
+
     // err = gpio_set_direction(MQ2_DO_PIN, GPIO_MODE_INPUT);
 
     // if (err != ESP_OK) {
@@ -206,9 +252,28 @@ void app_main(void)
 #endif
 
     while (true) {
-        int is_high = gpio_get_level(MQ2_DO_PIN);
-        ESP_LOGI("MQ2", "%i", is_high);
         vTaskDelay(MAIN_TASK_DELAY_MS / portTICK_PERIOD_MS);
+
+        int rawSample;
+        err = adc_oneshot_read(adcHandle, ADC_CHANNEL_5, &rawSample);
+
+        if (err != ESP_OK) {
+            ESP_LOGE("MQ2", "adc_oneshot_read FAILED %s", esp_err_to_name(err));
+            continue;
+        }    
+        
+        int calibratedSample;
+        err = adc_cali_raw_to_voltage(adcCalibrationHandle,
+                                    rawSample,
+                                    &calibratedSample);
+
+        if (err != ESP_OK) {
+            ESP_LOGE("MQ2", "adc_cali_raw_to_voltage FAILED %s", esp_err_to_name(err));
+            continue;
+        }    
+
+        // int is_high = gpio_get_level(MQ2_DO_PIN);
+        ESP_LOGI("MQ2", "%i - %i - %f", calibratedSample, rawSample, rawSample * (2.5f /4096));
     }
 
 #ifdef CONFIG_EXAMPLE_IPV6
