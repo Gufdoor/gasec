@@ -1,0 +1,9 @@
+# folders
+esp/.cache/
+esp/build/
+gasec_mobile_app/.dart_tool/
+gasec_mobile_app/.idea/
+.idea/
+
+# files
+gasec_mobile_app/pubspec.lock
