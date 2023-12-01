@@ -18,7 +18,7 @@ class _AppWrapViewState extends State<AppWrapView> {
         Expanded(
           child: Stack(
             children: [
-              handleAlerts(),
+              _handleAlerts(),
               const RouterOutlet(),
             ],
           ),
@@ -27,7 +27,7 @@ class _AppWrapViewState extends State<AppWrapView> {
     );
   }
 
-  Widget handleAlerts() {
+  Widget _handleAlerts() {
     final AppWrapCubit appCubit = AppWrapCubit.instance;
 
     return Column(
@@ -35,10 +35,7 @@ class _AppWrapViewState extends State<AppWrapView> {
         BlocProvider.value(
           value: appCubit,
           child: const Column(
-            children: [
-              // CustomAppLoadingModal(),
-              // CustomAppAlertModal(),
-            ],
+            children: [],
           ),
         ),
       ],

@@ -4,9 +4,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:gasec_mobile_app/src/domain/enums/environment_setting_enum.dart';
+import 'package:gasec_mobile_app/src/domain/models/device_model.dart';
 import 'package:gasec_mobile_app/src/modules/gasec/bloc/gasec_cubit.dart';
 import 'package:gasec_mobile_app/src/modules/gasec/bloc/gasec_state.dart';
-import 'package:gasec_mobile_app/src/modules/gasec/gasec_module.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 class DeviceScreen extends StatefulWidget {
@@ -18,12 +19,14 @@ class DeviceScreen extends StatefulWidget {
 
 class _DeviceScreenState extends State<DeviceScreen> {
   late int selectedTab = 0;
+  late EnvironmentSettingEnum selectedEnvironment;
   final PageController pageController = PageController(initialPage: 0);
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: BlocBuilder<GasecCubit, GasecState>(builder: (context, state) {
+        selectedEnvironment = state.device!.environment;
         return Scaffold(
           backgroundColor: const Color(0xFF393E41),
           body: Padding(
@@ -32,8 +35,8 @@ class _DeviceScreenState extends State<DeviceScreen> {
               controller: pageController,
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                handleStatusTab(),
-                handleConfigTab(),
+                handleStatusTab(state.device!),
+                handleConfigTab(state.device!),
               ],
             ),
           ),
@@ -76,11 +79,10 @@ class _DeviceScreenState extends State<DeviceScreen> {
     );
   }
 
-  Widget handleStatusTab() {
+  Widget handleStatusTab(DeviceModel device) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        // TODO: implement colors logic
-        color: const Color.fromARGB(255, 161, 207, 107),
+        color: Color(device.leakage.color),
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Column(
@@ -108,7 +110,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
             color: const Color(0xFF393E41),
           ),
           const SizedBox(height: 15.0),
-          // TODO: use real IP
           Container(
             height: 30.0,
             width: MediaQuery.of(context).size.width * 0.4,
@@ -117,37 +118,51 @@ class _DeviceScreenState extends State<DeviceScreen> {
               color: const Color(0xFF393E41),
               borderRadius: BorderRadius.circular(5.0),
             ),
-            child: const Text(
-              "192.108.0.0",
-              style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 20.0),
+            child: Text(
+              device.ip,
+              style: const TextStyle(color: Color(0xFFFFFFFF), fontSize: 20.0),
             ),
           ),
           const SizedBox(height: 40.0),
           Container(
             width: MediaQuery.of(context).size.width * 0.7,
             height: 100.0,
+            padding: const EdgeInsets.fromLTRB(6.0, 0.0, 2.0, 6.0),
             decoration: BoxDecoration(
               color: const Color(0xFF587B7F),
               borderRadius: BorderRadius.circular(5.0),
             ),
-            child: const Column(
+            child: Column(
               children: [
-                SizedBox(height: 10.0),
-                Text(
-                  "Status atual",
-                  style: TextStyle(
-                    color: Color(0xFFFFFFFF),
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
+                const SizedBox(height: 10.0),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      const TextSpan(
+                        text: "Status atual: ",
+                        style: TextStyle(
+                          color: Color(0xFFFFFFFF),
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextSpan(
+                        text: device.leakage.title,
+                        style: TextStyle(
+                          color: Color(device.leakage.color),
+                          fontSize: 20.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  textAlign: TextAlign.center,
                 ),
-                // TODO: implement enum
+                const SizedBox(height: 4.0),
                 Text(
-                  "Vazamento Detectado",
-                  style: TextStyle(
+                  device.leakage.text,
+                  style: const TextStyle(
                     color: Color(0xFFFFFFFF),
-                    fontSize: 18.0,
+                    fontSize: 14.0,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -157,15 +172,16 @@ class _DeviceScreenState extends State<DeviceScreen> {
           const SizedBox(height: 20.0),
           Container(
             width: MediaQuery.of(context).size.width * 0.7,
-            height: 100.0,
+            height: 140.0,
+            padding: const EdgeInsets.fromLTRB(6.0, 0.0, 2.0, 6.0),
             decoration: BoxDecoration(
               color: const Color(0xFF587B7F),
               borderRadius: BorderRadius.circular(5.0),
             ),
-            child: const Column(
+            child: Column(
               children: [
-                SizedBox(height: 10.0),
-                Text(
+                const SizedBox(height: 10.0),
+                const Text(
                   "Ações recomendadas",
                   style: TextStyle(
                     color: Color(0xFFFFFFFF),
@@ -174,12 +190,11 @@ class _DeviceScreenState extends State<DeviceScreen> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                // TODO: implement enum
                 Text(
-                  "Evacue o local",
-                  style: TextStyle(
+                  device.leakage.action,
+                  style: const TextStyle(
                     color: Color(0xFFFFFFFF),
-                    fontSize: 18.0,
+                    fontSize: 14.0,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -219,7 +234,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
     );
   }
 
-  Widget handleConfigTab() {
+  Widget handleConfigTab(DeviceModel device) {
     return DecoratedBox(
       decoration: BoxDecoration(
         color: const Color(0xFF587B7F),
@@ -250,7 +265,6 @@ class _DeviceScreenState extends State<DeviceScreen> {
             color: const Color(0xFF393E41),
           ),
           const SizedBox(height: 15.0),
-          // TODO: use real IP
           Container(
             height: 30.0,
             width: MediaQuery.of(context).size.width * 0.4,
@@ -259,9 +273,9 @@ class _DeviceScreenState extends State<DeviceScreen> {
               color: const Color(0xFF393E41),
               borderRadius: BorderRadius.circular(5.0),
             ),
-            child: const Text(
-              "192.108.0.0",
-              style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 20.0),
+            child: Text(
+              device.ip,
+              style: const TextStyle(color: Color(0xFFFFFFFF), fontSize: 20.0),
             ),
           ),
           const SizedBox(height: 40.0),
@@ -298,7 +312,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
                 borderRadius: BorderRadius.circular(5.0),
               ),
             ),
-            onPressed: () => Modular.to.navigate(routeConnect),
+            onPressed: () => Modular.get<GasecCubit>().disconnectDevice(),
             child: const Text(
               "Desconectar",
               style: TextStyle(
@@ -317,7 +331,7 @@ class _DeviceScreenState extends State<DeviceScreen> {
       showGeneralDialog(
         context: context,
         barrierColor: Colors.black38,
-        barrierDismissible: true,
+        barrierDismissible: false,
         barrierLabel: "Dismiss",
         transitionDuration: const Duration(milliseconds: 200),
         transitionBuilder: (ctx, anim1, anim2, child) => BackdropFilter(
@@ -331,117 +345,99 @@ class _DeviceScreenState extends State<DeviceScreen> {
           ),
         ),
         pageBuilder: (_, __, ___) {
-          // return BlocProvider.value(
-          //   value: Modular.get<DeviceCubit>(),
-          //   child: CustomDeviceSelectionDialog(type: widget.type),
-          // );
-          return buildEnvironmentDialog();
+          return BlocProvider.value(
+            value: Modular.get<GasecCubit>(),
+            child: buildEnvironmentDialog(),
+          );
         },
       ),
     );
   }
 
   Widget buildEnvironmentDialog() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        AlertDialog(
-          backgroundColor: const Color(0xFF587B7F),
+    return BlocBuilder<GasecCubit, GasecState>(builder: (context, state) {
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AlertDialog(
+            backgroundColor: const Color(0xFF587B7F),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.4,
+              height: MediaQuery.of(context).size.width * 0.4,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  buildDialogButton(
+                    state.device!.environment,
+                    EnvironmentSettingEnum.indoor,
+                  ),
+                  const SizedBox(height: 4.0),
+                  buildDialogButton(
+                    state.device!.environment,
+                    EnvironmentSettingEnum.outdoor,
+                  ),
+                  const SizedBox(height: 4.0),
+                  buildDialogButton(
+                    state.device!.environment,
+                    EnvironmentSettingEnum.forest,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20.0),
+          SizedBox(
+            width: 160.0,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFA1CF6B),
+                foregroundColor: Colors.black38,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+              ),
+              onPressed: () => Modular.to.pop(),
+              child: const Text(
+                "Salvar",
+                style: TextStyle(
+                  color: Color(0xFF393E41),
+                  fontSize: 24.0,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  Widget buildDialogButton(
+    EnvironmentSettingEnum selectedEnvironment,
+    EnvironmentSettingEnum environment,
+  ) {
+    final bool isEqual = selectedEnvironment == environment;
+
+    return SizedBox(
+      width: MediaQuery.of(context).size.width * 0.5,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Color(isEqual ? 0xFFE2C044 : 0xFFD3D0CB),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          content: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.4,
-            height: MediaQuery.of(context).size.width * 0.4,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // TODO: implement selection logic
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD3D0CB),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                    onPressed: () {},
-                    child: const Text(
-                      "Espaço interno",
-                      style: TextStyle(
-                        color: Color(0xFF393E41),
-                        fontSize: 20.0,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 4.0),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD3D0CB),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                    onPressed: () {},
-                    child: const Text(
-                      "Espaço externo",
-                      style: TextStyle(
-                        color: Color(0xFF393E41),
-                        fontSize: 20.0,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 4.0),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.5,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFD3D0CB),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                    ),
-                    onPressed: () {},
-                    child: const Text(
-                      "Mata aberta",
-                      style: TextStyle(
-                        color: Color(0xFF393E41),
-                        fontSize: 20.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            borderRadius: BorderRadius.circular(5.0),
           ),
         ),
-        const SizedBox(height: 20.0),
-        SizedBox(
-          width: 160.0,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFA1CF6B),
-              foregroundColor: Colors.black38,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
-              ),
-            ),
-            onPressed: () => Modular.to.pop(),
-            child: const Text(
-              "Salvar",
-              style: TextStyle(
-                color: Color(0xFF393E41),
-                fontSize: 24.0,
-              ),
-            ),
+        onPressed: () => Modular.get<GasecCubit>().setEnvironment(environment),
+        child: Text(
+          environment.title,
+          style: const TextStyle(
+            color: Color(0xFF393E41),
+            fontSize: 20.0,
           ),
         ),
-      ],
+      ),
     );
   }
 }

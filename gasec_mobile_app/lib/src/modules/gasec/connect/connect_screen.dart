@@ -13,6 +13,7 @@ class ConnectScreen extends StatefulWidget {
 
 class _ConnectScreenState extends State<ConnectScreen> {
   final TextEditingController ipController = TextEditingController();
+  late bool hasSucceed = true;
 
   @override
   Widget build(BuildContext context) {
@@ -45,14 +46,23 @@ class _ConnectScreenState extends State<ConnectScreen> {
                       ),
                     ),
                     const SizedBox(height: 8.0),
-                    const Text(
-                      "Insira o endereço IPv4 do dispositivo para iniciar uma conexão",
-                      style: TextStyle(
-                        color: Color(0xFFFFFFFF),
-                        fontSize: 14.0,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
+                    hasSucceed
+                        ? const Text(
+                            "Insira o endereço IPv4 do dispositivo para iniciar uma conexão",
+                            style: TextStyle(
+                              color: Color(0xFFFFFFFF),
+                              fontSize: 14.0,
+                            ),
+                            textAlign: TextAlign.center,
+                          )
+                        : const Text(
+                            "Conexão falhou, tente novamente",
+                            style: TextStyle(
+                              color: Color(0xFFE87461),
+                              fontSize: 14.0,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                     const SizedBox(height: 30.0),
                     TextFormField(
                       keyboardType: TextInputType.number,
@@ -80,11 +90,12 @@ class _ConnectScreenState extends State<ConnectScreen> {
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                         ),
-                        onPressed: () {
-                          // TODO: implementar conexão
-                          Modular.get<GasecCubit>().connectDevice(
+                        onPressed: () async {
+                          hasSucceed =
+                              await Modular.get<GasecCubit>().connectDevice(
                             ipController.text,
                           );
+                          toggleHasSucceed();
                         },
                         child: const Text(
                           "Conectar",
@@ -101,5 +112,11 @@ class _ConnectScreenState extends State<ConnectScreen> {
         },
       ),
     );
+  }
+
+  void toggleHasSucceed() {
+    Future.delayed(const Duration(seconds: 4), () {
+      setState(() => hasSucceed = true);
+    });
   }
 }
