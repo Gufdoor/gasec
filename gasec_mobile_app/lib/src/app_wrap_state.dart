@@ -1,13 +1,11 @@
 
 
+import 'package:equatable/equatable.dart';
+
 enum AppWrapStatus { initial }
 
-// class AppWrapState extends Equatable {
-class AppWrapState {
+class AppWrapState extends Equatable {
   final AppWrapStatus status;
-  // final ResponseStatusModel? alertResponse;
-  // final ResponseStatusModel? snackBarResponse;
-  // final PushNotificationModel? pushNotification;
   final bool isLoading;
   final String loadingText;
   final int duration;
@@ -16,9 +14,6 @@ class AppWrapState {
 
   const AppWrapState({
     this.status = AppWrapStatus.initial,
-    // this.alertResponse,
-    // this.snackBarResponse,
-    // this.pushNotification,
     this.isLoading = false,
     this.loadingText = "",
     this.duration = 8,
@@ -28,9 +23,6 @@ class AppWrapState {
 
   AppWrapState copyWith({
     AppWrapStatus? status,
-    // ResponseStatusModel? alertResponse,
-    // ResponseStatusModel? snackBarResponse,
-    // PushNotificationModel? pushNotification,
     bool? isLoading,
     String? loadingText,
     int? duration,
@@ -38,9 +30,6 @@ class AppWrapState {
   }) {
     return AppWrapState(
       status: status ?? this.status,
-      // alertResponse: alertResponse,
-      // snackBarResponse: snackBarResponse,
-      // pushNotification: pushNotification,
       isLoading: isLoading ?? this.isLoading,
       loadingText: loadingText ?? this.loadingText,
       duration: duration ?? this.duration,
@@ -52,9 +41,6 @@ class AppWrapState {
   @override
   List<Object?> get props => [
         status,
-        // alertResponse,
-        // snackBarResponse,
-        // pushNotification,
         isLoading,
         loadingText,
         duration,

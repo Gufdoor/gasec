@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:gasec_mobile_app/main_module.dart';
-import 'package:gasec_mobile_app/src/modules/connection/connection_module.dart';
+import 'package:gasec_mobile_app/src/modules/gasec/gasec_module.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
