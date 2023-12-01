@@ -8,7 +8,6 @@ import 'package:gasec_mobile_app/src/modules/gasec/bloc/gasec_cubit.dart';
 import 'package:gasec_mobile_app/src/modules/gasec/bloc/gasec_state.dart';
 import 'package:gasec_mobile_app/src/modules/gasec/gasec_module.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
-import 'package:gasec_mobile_app/src/modules/connection/connection_module.dart';
 
 class DeviceScreen extends StatefulWidget {
   const DeviceScreen({super.key});
