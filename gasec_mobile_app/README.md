@@ -1,7 +1,4 @@
-# gasec_mobile_app
+# Gasec Flutter Android App
 
-Mobile app integrated with Gasec gas detector system.
+Mobile app integrated with Gasec gas detector system. This project is used to control and monitor Gasec system.
 
-## Getting Started
-
-This project is used to control and monitor Gasec system.
