@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:gasec_mobile_app/src/modules/connection/connection_module.dart';
+import 'package:gasec_mobile_app/src/modules/gasec/bloc/gasec_cubit.dart';
+import 'package:gasec_mobile_app/src/modules/gasec/bloc/gasec_state.dart';
+import 'package:gasec_mobile_app/src/modules/gasec/gasec_module.dart';
 
 class DeviceScreen extends StatefulWidget {
   const DeviceScreen({super.key});
@@ -19,54 +22,56 @@ class _DeviceScreenState extends State<DeviceScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Scaffold(
-        backgroundColor: const Color(0xFF393E41),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: PageView(
-            controller: pageController,
-            physics: const NeverScrollableScrollPhysics(),
-            children: [
-              handleStatusTab(),
-              handleConfigTab(),
-            ],
-          ),
-        ),
-        bottomNavigationBar: BottomAppBar(
-          padding: EdgeInsets.zero,
-          height: 60.0,
-          child: SizedBox(
-            height: 50.0,
-            child: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: const Color(0xFF587B7F),
-              currentIndex: selectedTab,
-              selectedItemColor: const Color(0xFFFFFFFF),
-              unselectedItemColor: const Color(0xFF393E41),
-              onTap: (index) {
-                setState(() => selectedTab = index);
-                pageController.jumpToPage(index);
-              },
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.home_outlined,
-                    size: 25.0,
-                  ),
-                  label: "Home",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.settings_outlined,
-                    size: 25.0,
-                  ),
-                  label: 'Configurações',
-                ),
+      child: BlocBuilder<GasecCubit, GasecState>(builder: (context, state) {
+        return Scaffold(
+          backgroundColor: const Color(0xFF393E41),
+          body: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: PageView(
+              controller: pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              children: [
+                handleStatusTab(),
+                handleConfigTab(),
               ],
             ),
           ),
-        ),
-      ),
+          bottomNavigationBar: BottomAppBar(
+            padding: EdgeInsets.zero,
+            height: 60.0,
+            child: SizedBox(
+              height: 50.0,
+              child: BottomNavigationBar(
+                type: BottomNavigationBarType.fixed,
+                backgroundColor: const Color(0xFF587B7F),
+                currentIndex: selectedTab,
+                selectedItemColor: const Color(0xFFFFFFFF),
+                unselectedItemColor: const Color(0xFF393E41),
+                onTap: (index) {
+                  setState(() => selectedTab = index);
+                  pageController.jumpToPage(index);
+                },
+                items: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.home_outlined,
+                      size: 25.0,
+                    ),
+                    label: "Home",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(
+                      Icons.settings_outlined,
+                      size: 25.0,
+                    ),
+                    label: 'Configurações',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }),
     );
   }
 

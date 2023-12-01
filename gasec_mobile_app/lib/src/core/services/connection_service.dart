@@ -1,5 +1,5 @@
 import "package:flutter_modular/flutter_modular.dart";
-import "package:gasec_mobile_app/src/modules/connection/connection_module.dart";
+import "package:gasec_mobile_app/src/modules/gasec/gasec_module.dart";
 
 class ConnectionService {
   ConnectionService._internal();
@@ -28,7 +28,6 @@ class ConnectionService {
   }
 
   void _init() {
-    print("initing connection");
     Future.delayed(const Duration(milliseconds: 3000), () {
       Modular.to.navigate(routeConnect);
     });

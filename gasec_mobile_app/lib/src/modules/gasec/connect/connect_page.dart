@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 import "package:flutter_bloc/flutter_bloc.dart";
 import "package:flutter_modular/flutter_modular.dart";
-import "package:gasec_mobile_app/src/modules/connection/bloc/connection_cubit.dart";
-import "package:gasec_mobile_app/src/modules/connection/connect/connect_screen.dart";
+import "package:gasec_mobile_app/src/modules/gasec/bloc/gasec_cubit.dart";
+import "package:gasec_mobile_app/src/modules/gasec/connect/connect_screen.dart";
 
 class ConnectPage extends StatefulWidget {
   const ConnectPage({super.key});
@@ -12,7 +12,7 @@ class ConnectPage extends StatefulWidget {
 }
 
 class _ConnectPageState extends State<ConnectPage> {
-  final ConnectionCubit _connectionCubit = Modular.get<ConnectionCubit>();
+  final GasecCubit _connectionCubit = Modular.get<GasecCubit>();
 
   @override
   Widget build(BuildContext context) {
