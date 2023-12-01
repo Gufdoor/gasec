@@ -10,6 +10,7 @@
 #include <sys/param.h>
 #include "esp_err.h"
 #include "freertos/FreeRTOS.h"
+#include "freertos/projdefs.h"
 #include "freertos/task.h"
 #include "esp_system.h"
 #include "esp_wifi.h"
@@ -19,6 +20,7 @@
 #include "nvs_flash.h"
 #include "esp_netif.h"
 #include "protocol_examples_common.h"
+#include "stdatomic.h"
 
 #include "lwip/err.h"
 #include "lwip/sockets.h"
@@ -40,48 +42,44 @@
 #define MAIN_TASK_DELAY_MS          1000
 
 static const char *TAG = "example";
+static atomic_bool isConnected = false;
 
-static void do_retransmit(const int sock)
+static void transmit_sample(const int sock, QueueHandle_t sampleQueue)
 {
-    int len;
-    char rx_buffer[128];
+    // int len;
+    // char rx_buffer[128];
 
-    do {
-        len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
-        if (len < 0) {
-            ESP_LOGE(TAG, "Error occurred during receiving: errno %d", errno);
-        } else if (len == 0) {
-            ESP_LOGW(TAG, "Connection closed");
-        } else {
-            rx_buffer[len] = 0; // Null-terminate whatever is received and treat it like a string
-            ESP_LOGI(TAG, "Received %d bytes: %s", len, rx_buffer);
+    while(true) {
+        int sample;
 
-            // send() can return less bytes than supplied length.
-            // Walk-around for robust implementation.
-            int to_write = len;
-            while (to_write > 0) {
-                int written = send(sock, rx_buffer + (len - to_write), to_write, 0);
-                if (written < 0) {
-                    ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
-                    // Failed to retransmit, giving up
-                    return;
-                }
-                to_write -= written;
-            }
+        if (xQueueReceive(sampleQueue, &sample, 10 / portTICK_PERIOD_MS) != pdTRUE) {
+            continue;
         }
-    } while (len > 0);
+
+        ESP_LOGI("MQ2", "Sending: %d", sample);
+        int written = send(sock, &sample, sizeof(sample), 0);
+
+        if (written < 0) {
+            ESP_LOGE(TAG, "Error occurred during sending: errno %d", errno);
+            // Failed to retransmit, giving up
+            return;
+        }
+    }
 }
 
 static void tcp_server_task(void *pvParameters)
 {
     char addr_str[128];
-    int addr_family = (int)pvParameters;
+    // int addr_family = (int)pvParameters;
+    int addr_family = AF_INET;
     int ip_protocol = 0;
     int keepAlive = 1;
     int keepIdle = KEEPALIVE_IDLE;
     int keepInterval = KEEPALIVE_INTERVAL;
     int keepCount = KEEPALIVE_COUNT;
     struct sockaddr_storage dest_addr;
+
+    QueueHandle_t sampleQueue = pvParameters;
 
 #ifdef CONFIG_EXAMPLE_IPV4
     if (addr_family == AF_INET) {
@@ -162,7 +160,9 @@ static void tcp_server_task(void *pvParameters)
 #endif
         ESP_LOGI(TAG, "Socket accepted ip address: %s", addr_str);
 
-        do_retransmit(sock);
+        isConnected = true;
+        transmit_sample(sock, sampleQueue);
+        isConnected = false;
 
         shutdown(sock, 0);
         close(sock);
@@ -247,8 +247,15 @@ void app_main(void)
      */
     ESP_ERROR_CHECK(example_connect());
 
+    QueueHandle_t sampleQueue = xQueueCreate(10, sizeof(int));
+
+    if (!sampleQueue) {
+        ESP_LOGE("MQ2", "FATAL ERROR");
+        return;
+    } 
+
 #ifdef CONFIG_EXAMPLE_IPV4
-    xTaskCreate(tcp_server_task, "tcp_server", 4096, (void*)AF_INET, 5, NULL);
+    xTaskCreate(tcp_server_task, "tcp_server", 4096, sampleQueue, 5, NULL);
 #endif
 
     while (true) {
@@ -274,6 +281,14 @@ void app_main(void)
 
         // int is_high = gpio_get_level(MQ2_DO_PIN);
         ESP_LOGI("MQ2", "%i - %i - %f", calibratedSample, rawSample, rawSample * (2.5f /4096));
+
+        if (!isConnected) {
+            continue;
+        }
+
+        if (xQueueSend(sampleQueue, &rawSample, 0) == errQUEUE_FULL) {
+            ESP_LOGE("MQ2", "QUEUE FULL");
+        }
     }
 
 #ifdef CONFIG_EXAMPLE_IPV6
